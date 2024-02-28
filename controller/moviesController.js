@@ -22,8 +22,23 @@ exports.getAllMovies = async(req, res) => {
         // })
 
         // console.log(queryObj);
-        
-        const movies = await Movie.find(req.query);
+        let queryStr = JSON.stringify(req.query);
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match)=>`$${match}`);
+        const queryObj = JSON.parse(queryStr);
+        // console.log(queryStr)
+       
+        let query = Movie.find(queryObj);
+        if(req.query.sort){
+            const sortBy = req.query.sort.split(',').join(' ');
+            console.log(sortBy);
+            query = query.sort(sortBy);
+            // movies.sort(req.query.sort);
+        }else{
+            query = query.sort('-createdAt');
+        }
+        const movies = await query;
+        // const queryObj = JSON.parse(queryStr);
+
         // const movies = await Movie.find().
         // where('duration').
         // equals(req.query.duration).
