@@ -1,1 +1,73 @@
-[{"id":1,"name":"50 shades gray","releasedYear":"2012","duration":"120"},{"id":2,"name":"expendible","releasedYear":2018,"duration":"80"},{"id":3,"name":"avatar","releasedYear":2012,"duration":120}]
+[
+    {
+      "name": "Inception",
+      "description": "A mind-bending heist movie",
+      "duration": 148,
+      "ratings": 4.8,
+      "totalRating": 1200,
+      "releaseYear": 2010,
+      "ReleaseDate": "2010-07-16T00:00:00.000Z",
+      "genres": ["Action", "Sci-Fi", "Thriller"],
+      "directors": ["Christopher Nolan"],
+      "coverImage": "https://example.com/inception-cover.jpg",
+      "actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Ellen Page"],
+      "price": 12.99
+    },
+    {
+      "name": "The Shawshank Redemption",
+      "description": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+      "duration": 142,
+      "ratings": 4.7,
+      "totalRating": 1500,
+      "releaseYear": 1994,
+      "ReleaseDate": "1994-09-23T00:00:00.000Z",
+      "genres": ["Drama"],
+      "directors": ["Frank Darabont"],
+      "coverImage": "https://example.com/shawshank-cover.jpg",
+      "actors": ["Tim Robbins", "Morgan Freeman"],
+      "price": 9.99
+    },
+    {
+      "name": "The Dark Knight",
+      "description": "When the menace known as The Joker emerges, Batman must confront his greatest psychological and physical challenge.",
+      "duration": 152,
+      "ratings": 4.9,
+      "totalRating": 1800,
+      "releaseYear": 2008,
+      "ReleaseDate": "2008-07-18T00:00:00.000Z",
+      "genres": ["Action", "Crime", "Drama"],
+      "directors": ["Christopher Nolan"],
+      "coverImage": "https://example.com/dark-knight-cover.jpg",
+      "actors": ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
+      "price": 11.99
+    },
+    {
+      "name": "Pulp Fiction",
+      "description": "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+      "duration": 154,
+      "ratings": 4.5,
+      "totalRating": 1300,
+      "releaseYear": 1994,
+      "ReleaseDate": "1994-10-14T00:00:00.000Z",
+      "genres": ["Crime", "Drama"],
+      "directors": ["Quentin Tarantino"],
+      "coverImage": "https://example.com/pulp-fiction-cover.jpg",
+      "actors": ["John Travolta", "Samuel L. Jackson", "Uma Thurman"],
+      "price": 10.99
+    },
+    {
+      "name": "Interstellar",
+      "description": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+      "duration": 169,
+      "ratings": 4.6,
+      "totalRating": 1600,
+      "releaseYear": 2014,
+      "ReleaseDate": "2014-11-07T00:00:00.000Z",
+      "genres": ["Adventure", "Drama", "Sci-Fi"],
+      "directors": ["Christopher Nolan"],
+      "coverImage": "https://example.com/interstellar-cover.jpg",
+      "actors": ["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"],
+      "price": 13.99
+    }
+  ]
+  
