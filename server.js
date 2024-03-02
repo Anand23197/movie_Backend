@@ -1,19 +1,20 @@
-const dotenv = require('dotenv')
-dotenv.config({path: './config.env'});
-const app = require('./app');
-const { default: mongoose } = require('mongoose');
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
+const app = require("./app");
+const { default: mongoose } = require("mongoose");
 
+console.log(process.env);
 
-console.log(process.env)
-
-mongoose.connect(process.env.LOCAL_CONN_STR,{
-    useNewUrlParser : true
-}).then((conn)=>{
+mongoose
+  .connect(process.env.LOCAL_CONN_STR, {
+    useNewUrlParser: true,
+  })
+  .then((conn) => {
     console.log("DB connection successfull");
-}).catch((err)=>{
+  })
+  .catch((err) => {
     console.log("some error occured while connecting");
-})
-
+  });
 
 // const testMovie = new Movie({
 //     name : "Dark Knight",
@@ -26,7 +27,7 @@ mongoose.connect(process.env.LOCAL_CONN_STR,{
 // }).catch((err)=>{
 //     console.log("Error occured: " + err);
 // })
-const port = process.env.PORT || 8000
-app.listen(port, ()=>{
-    console.log("server has started");
-})
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+  console.log("server has started");
+});
