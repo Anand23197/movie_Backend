@@ -1,5 +1,7 @@
 const Movie = require("../models/movieModel");
 const ApiFeatures = require("../utils/ApiFeatures");
+const CustomError = require("../utils/customError");
+const asyncErrorHandler = require('../utils/asyncErrorHandler');
 
 // exports.validateBody = (req, res)=>{
 //      if(!req.body.name || !req.body.releaseYear){
@@ -14,8 +16,8 @@ exports.getHighestRated = (req, res, next) => {
   req.query.sort = "-ratings";
   next();
 };
-exports.getAllMovies = async (req, res) => {
-  try {
+exports.getAllMovies = asyncErrorHandler(async (req, res, next) => {
+//   try {
     const features = new ApiFeatures(Movie.find(), req.query)
       .sort()
       .limitFields()
@@ -81,16 +83,16 @@ exports.getAllMovies = async (req, res) => {
         movies: movies,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
-    });
-  }
-};
+//   } catch (err) {
+//     res.status(400).json({
+//       status: "fail",
+//       message: err.message,
+//     });
+//   }
+});
 
-exports.getMovie = async (req, res) => {
-  try {
+exports.getMovie = asyncErrorHandler(async (req, res, next) => {
+//   try {
     const movie = await Movie.findById(req.params.id);
     res.status(200).json({
       status: "success",
@@ -99,16 +101,18 @@ exports.getMovie = async (req, res) => {
         movies: movie,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
-    });
-  }
-};
+//   } catch (err) {
+//     res.status(400).json({
+//       status: "fail",
+//       message: err.message,
+//     });
+//   }
+});
 
-exports.createMovie = async (req, res) => {
-  try {
+
+
+exports.createMovie = asyncErrorHandler(async(req, res, next) => {
+//   try {
     const movie = await Movie.create(req.body);
     res.status(201).json({
       status: "success",
@@ -116,13 +120,15 @@ exports.createMovie = async (req, res) => {
         movie,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "failed",
-      message: err.message,
-    });
-  }
-};
+//   } catch (err) {
+    // res.status(400).json({
+    //   status: "failed",
+    //   message: err.message,
+    // });
+    // const error = new CustomError(err.message, 400)
+    // next(error);
+//   }
+});
 
 exports.updateMovie = async (req, res) => {
   try {
@@ -160,8 +166,8 @@ exports.deleteMovie = async (req, res) => {
   }
 };
 
-exports.getMovieStats = async (req, res) => {
-  try {
+exports.getMovieStats = asyncErrorHandler(async (req, res, next) => {
+//   try {
     const stats = await Movie.aggregate([
       { $match: { ratings: { $gte: 4.5 } } },
       {
@@ -188,16 +194,16 @@ exports.getMovieStats = async (req, res) => {
         stats,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err.message,
-    });
-  }
-};
+//   } catch (err) {
+//     res.status(404).json({
+//       status: "fail",
+//       message: err.message,
+//     });
+//   }
+});
 
-exports.getMovieByGenre = async (req, res) => {
-  try {
+exports.getMovieByGenre = asyncErrorHandler(async (req, res, next) => {
+//   try {
     const genre = req.params.genre;
     const movies = await Movie.aggregate([
       { $unwind: "$genres" },
@@ -221,10 +227,10 @@ exports.getMovieByGenre = async (req, res) => {
         movies,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err.message,
-    });
-  }
-};
+//   } catch (err) {
+//     res.status(404).json({
+//       status: "fail",
+//       message: err.message,
+//     });
+//   }
+});
