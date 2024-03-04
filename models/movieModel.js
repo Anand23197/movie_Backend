@@ -5,6 +5,8 @@ const movieSchema = mongoose.Schema(
     name: {
       type: String,
       required: [true, "name is required field!"],
+      maxlength: [100, "movie name must note have more than 100 characters"],
+      minlength: [4, "movie name must note have less than 4 characters"],
       unique: true,
       trim: true,
     },
@@ -19,6 +21,8 @@ const movieSchema = mongoose.Schema(
     },
     ratings: {
       type: Number,
+      min: [1, "ratings must be 1 or greater than 1"],
+      max: [10, "ratings must be 10 or less"],
     },
     totalRating: {
       type: Number,
@@ -37,6 +41,20 @@ const movieSchema = mongoose.Schema(
     genres: {
       type: [String],
       required: [true, "Generes is required rield!"],
+      // enum: {
+      //   values: [
+      //     "Action",
+      //     "Adventure",
+      //     "Sci-fi",
+      //     "Thriller",
+      //     "Crime",
+      //     "Drama",
+      //     "Comedy",
+      //     "Romance",
+      //     "Biography",
+      //   ],
+      //   message: "This genres does not exist",
+      // },
     },
     directors: {
       type: [String],
@@ -95,6 +113,13 @@ movieSchema.pre(/^find/, function (next) {
 movieSchema.post(/^find/, function (docs, next) {
   this.find({ ReleaseDate: { $lte: Date.now() } });
   this.endTime = Date.now();
+  next();
+});
+
+movieSchema.pre("aggregate", function (next) {
+  console.log(
+    this._pipeline.unshift({ $match: { releaseYear: { $lte: Date.now() } } })
+  );
   next();
 });
 const Movie = mongoose.model("Movie", movieSchema);
