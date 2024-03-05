@@ -103,7 +103,7 @@ movieSchema.pre("save", function (next) {
 });
 
 movieSchema.post("save", function (doc, next) {
-  this.find({ ReleaseDate: { $lte: Date.now() } });
+  //  this.find({ ReleaseDate: { $lte: Date.now() } });
   this.endTime = Date.now();
   const content = `Query took ${
     this.endTime - this.startTime
