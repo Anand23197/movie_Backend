@@ -9,6 +9,12 @@ const devErrors = (res,err)=>{
     })
 }
 
+const duplicateKeyErrorHandler = (err)=>{
+    
+     const name = err.keyValue.name;
+     const msg = `There is already a movie with name ${name}. Please use another name!`;
+    return new CustomError(msg,400);
+}
 const prodErrors = (res, err)=>{
     if(err.isOperational){
         res.status(err.statusCode).json({
@@ -39,6 +45,7 @@ module.exports = (err, req, res, next)=>{
         if(err.name === "CastError"){
             err = castErrorHandler(err)
         }
+        if(err.code === 11000 ) err=> duplicateKeyErrorHandler(err)
         prodErrors(res, err);
     }
 }
