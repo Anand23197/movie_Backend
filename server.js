@@ -1,5 +1,13 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
+
+
+process.on('uncaughtException', (err)=>{
+  console.log(err.name, err.message);
+  console.log("Uncaught exception occured shutting down...!")
+    process.exit(1)
+})
+
 const app = require("./app");
 const { default: mongoose } = require("mongoose");
 
@@ -12,9 +20,9 @@ mongoose
   .then((conn) => {
     console.log("DB connection successfull");
   })
-  .catch((err) => {
-    console.log("some error occured while connecting");
-  });
+  // .catch((err) => {
+  //   console.log("some error occured while connecting");
+  // });
 
 // const testMovie = new Movie({
 //     name : "Dark Knight",
@@ -28,6 +36,15 @@ mongoose
 //     console.log("Error occured: " + err);
 // })
 const port = process.env.PORT || 8000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log("server has started");
 });
+
+process.on('unhandledRejection', (err)=>{
+  console.log(err.name, err.message);
+  console.log("Unhandled rejection occured shutting down...")
+  server.close(()=>{
+    process.exit(1)
+  })
+ 
+})
