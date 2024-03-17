@@ -3,6 +3,8 @@ const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const jwt = require("jsonwebtoken");
 const CustomError = require("../utils/customError");
 const util = require("util");
+const sendEmail = require("../utils/email");
+const crypto = require("crypto");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_STR, {
@@ -10,18 +12,32 @@ const signToken = (id) => {
   });
 };
 
-exports.signup = asyncErrorHandler(async (req, res, next) => {
-  const newUser = await User.create(req.body);
+const createSendRes = (user, statusCode, res) => {
+  const token = signToken(user._id);
 
-  const token = signToken(newUser._id);
+  const options = {
+    maxAge: process.env.LOGIN_EXPIRES,
+    httpOnly: true,
+  };
 
-  res.status(201).json({
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+  }
+  res.cookie("jwt", token, options);
+
+  user.password = undefined;
+  res.status(statusCode).json({
     status: "success",
     token,
     data: {
-      user: newUser,
+      user,
     },
   });
+};
+
+exports.signup = asyncErrorHandler(async (req, res, next) => {
+  const newUser = await User.create(req.body);
+  createSendRes(newUser, 201, res);
 });
 
 exports.login = asyncErrorHandler(async (req, res, next) => {
@@ -46,11 +62,7 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
     return next(error);
   }
 
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createSendRes(user, 200, res);
 });
 
 exports.protect = asyncErrorHandler(async (req, res, next) => {
@@ -132,11 +144,65 @@ exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
     next(error);
   }
 
-  const resetToken = user.createResetPasswordToken();
-
-  await user.save({ validateBeforeSave: false });
   //generate a random reset token
+
+  const resetToken = await user.createResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
   //send the token back to the user email
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/users/resetPassword/${resetToken}`;
+  const message = `we have received a password reset request. Please use the below link to reset your password\n\n ${resetUrl}\n\n This reset password link is valid only for 10 minutes`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "password change request received",
+      message: message,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "password reset link send to the user email",
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    user.save({ validateBeforeSave: false });
+
+    return next(
+      new CustomError(
+        `There was an error sending password reset email. Please try again later`,
+        500
+      )
+    );
+  }
 });
 
-exports.resetPassword = (req, res, next) => {};
+exports.resetPassword = async (req, res, next) => {
+  //if the user exist with given token & token has not expired
+  const token = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    const error = new CustomError("Token is invalid or has expired!", 400);
+    next(error);
+  }
+
+  //resetting the user password
+  user.password = req.body.password;
+  req.confirmPassword = req.body.confirmPassword;
+
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  user.passwordChangedAt = Date.now();
+  user.save();
+
+  //login the user ones the password is changed
+  createSendRes(user, 200, res);
+};

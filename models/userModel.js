@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
       message: "Password & Confirm password does not match",
     },
   },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date,
@@ -80,6 +85,12 @@ userSchema.methods.createResetPasswordToken = async function () {
   console.log(resetToken, this.passwordResetToken);
   return resetToken;
 };
+
+userSchema.pre(/^find/, function (next) {
+  //this keyword in function will point to current query
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
